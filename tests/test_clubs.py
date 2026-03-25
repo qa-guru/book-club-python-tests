@@ -2,21 +2,21 @@ import requests
 from jsonschema import validate
 
 from schemas.clubs_schema import clubs_response
+from tests.clubs_common import CLUBS_LIST_URL
 
 
-def test_get_clubs():
-    response = requests.get('https://book-club.qa.guru/api/v1/clubs')
+class TestClubListSmoke:
+    """Базовый ответ списка: статус, схема, первая страница пагинации."""
 
-    print("\nStatus code:", response.status_code)
-    print("Headers:", response.headers)
-    print("Body:", response.text)
+    def test_get_clubs_returns_valid_first_page(self):
+        response = requests.get(CLUBS_LIST_URL)
 
-    assert response.status_code == 200
+        assert response.status_code == 200
 
-    body = response.json()
-    validate(body, schema=clubs_response)
+        body = response.json()
+        validate(body, schema=clubs_response)
 
-    assert body['count'] >= 0
-    assert body['next'] == 'https://book-club.qa.guru/api/v1/clubs/?page=2'
-    assert body['previous'] is None
-    assert len(body['results']) >= 0
+        assert body["count"] >= 0
+        assert body["next"] == "https://book-club.qa.guru/api/v1/clubs/?page=2"
+        assert body["previous"] is None
+        assert len(body["results"]) >= 0
